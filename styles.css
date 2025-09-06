@@ -58,14 +58,16 @@ body {
 }
 
 .search-container {
-    padding: 0 16px 12px;
+    padding: 0 16px; /* remove bottom padding when collapsed to avoid extra header height */
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.3s ease, padding-bottom 0.3s ease;
 }
 
 .search-container.active {
-    max-height: 60px;
+    /* when active add bottom padding and allow enough max-height for the input + padding */
+    padding-bottom: 12px;
+    max-height: 72px;
 }
 
 .search-input {
@@ -605,3 +607,5 @@ body {
     background: #d2d0ce;
     border-radius: 4px;
 }
+
+

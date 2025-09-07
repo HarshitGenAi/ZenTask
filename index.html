@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Tasks - Todo App</title>
+    <title>ZenTask - Todo App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -14,10 +17,21 @@
                 <button class="menu-btn" id="menuBtn">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1 class="app-title">My Tasks</h1>
-                <button class="search-btn" id="searchBtn">
-                    <i class="fas fa-search"></i>
-                </button>
+                <h1 class="app-title logo">ZenTask</h1>
+                <div class="header-actions">
+                    <button class="settings-btn" id="openSettingsBtn" aria-label="Settings">
+                        <i class="fas fa-gear"></i>
+                    </button>
+                    <button class="add-page-btn" id="openAddPageBtn" aria-label="Add task (detailed)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
             </div>
             <div class="search-container" id="searchContainer">
                 <input type="text" id="searchInput" placeholder="Search tasks..." class="search-input">
@@ -30,7 +44,7 @@
                     <div class="user-avatar">
                         <i class="fas fa-user"></i>
                     </div>
-                    <span class="user-name">My Tasks</span>
+                    <span class="user-name">ZenTask</span>
                 </div>
                 <ul class="nav-list">
                     <li class="nav-item active" data-list="my-day">
@@ -63,10 +77,27 @@
                 <span class="list-date" id="listDate"></span>
             </div>
 
-            <div class="filter-container">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="active">Active</button>
-                <button class="filter-btn" data-filter="completed">Completed</button>
+            <div class="toolbar-row">
+                <div class="filter-container segmented" id="filterSegmented" role="tablist" aria-label="Task filter">
+                    <div class="segmented-track">
+                        <div class="segmented-slider" id="filterSlider" aria-hidden="true"></div>
+                        <button class="filter-btn active" role="tab" aria-selected="true" data-filter="all">All</button>
+                        <button class="filter-btn" role="tab" aria-selected="false" data-filter="active">Active</button>
+                        <button class="filter-btn" role="tab" aria-selected="false" data-filter="completed">Completed</button>
+                    </div>
+                </div>
+                <div class="sort-bar">
+                    <label for="sortSelect">Sort</label>
+                    <select id="sortSelect" class="sort-select" aria-label="Sort tasks">
+                        <option value="manual">Manual</option>
+                        <option value="created_desc">Newest</option>
+                        <option value="created_asc">Oldest</option>
+                        <option value="due_asc">Due date ↑</option>
+                        <option value="due_desc">Due date ↓</option>
+                        <option value="priority_desc">Priority ↑</option>
+                        <option value="priority_asc">Priority ↓</option>
+                    </select>
+                </div>
             </div>
 
             <div class="task-list" id="taskList">
@@ -78,9 +109,10 @@
 
             <div class="add-task-container">
                 <div class="add-task-input">
-                    <input type="text" id="taskInput" placeholder="Add a task">
-                    <button class="add-btn" id="addBtn">
-                        <i class="fas fa-plus"></i>
+                    <i class="fas fa-pen input-leading-icon" aria-hidden="true"></i>
+                    <input type="text" id="taskInput" placeholder="Quick add a task">
+                    <button class="add-btn" id="addBtn" aria-label="Quick add task">
+                        <i class="fas fa-arrow-up"></i>
                     </button>
                 </div>
             </div>
@@ -126,6 +158,88 @@
             </div>
         </div>
     </div>
+
+    <div class="celebration-overlay" id="celebrationOverlay" aria-hidden="true">
+        <div class="screen-glow"></div>
+        <div class="confetti" id="confettiContainer"></div>
+    </div>
+
+    <!-- Full-screen add page -->
+    <div class="add-page-overlay" id="addPage" aria-hidden="true">
+        <div class="add-page-panel">
+            <div class="add-page-header">
+                <h3>Add Task</h3>
+                <button class="close-btn" id="closeAddPage" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="task-form add-page-form" id="addPageForm">
+                <div class="form-group">
+                    <label for="ap_title">Title *</label>
+                    <input type="text" id="ap_title" required placeholder="e.g., Prepare project report">
+                </div>
+                <div class="form-group">
+                    <label for="ap_desc">Description</label>
+                    <textarea id="ap_desc" rows="4" placeholder="Add more details"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ap_due">Due Date</label>
+                        <input type="date" id="ap_due">
+                    </div>
+                    <div class="form-group">
+                        <label for="ap_priority">Priority</label>
+                        <select id="ap_priority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="ap_cancel">Cancel</button>
+                    <button type="submit" class="save-btn" id="ap_save">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-overlay" id="settingsPanel" aria-hidden="true">
+        <div class="settings-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-btn" id="closeSettingsBtn" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-title">Performance mode</div>
+                        <div class="setting-desc">Reduce blurs/animations for smoother performance</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="togglePerfLite">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-title">Celebrate completion</div>
+                        <div class="setting-desc">Enable confetti when marking tasks completed</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleConfetti">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toasts -->
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
     <script src="script.js"></script>
 </body>
